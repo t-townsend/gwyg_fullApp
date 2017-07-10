@@ -1,28 +1,38 @@
-
-const path = require('path');
-
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
-  template: './client/index.html',
-  filename: 'index.html',
-  inject: 'body'
-})
+var webpack = require('webpack');
+var autoprefixer = require('autoprefixer');
 
 module.exports = {
-  entry: './client/index.jsx',
-  output: {
-    path: path.resolve('dist'),
-    filename: 'index_bundle.js'
-  },
+  entry: [
+    'webpack-dev-server/client?http://localhost:8080',
+    'webpack/hot/only-dev-server',
+    './src/index.jsx'
+  ],
   module: {
-    loaders: [
-      { test: /\.js$/, loader: 'babel-loader', exclude: /node_modules/ },
-      { test: /\.jsx$/, loader: 'babel-loader', exclude: /node_modules/ }
-    ]
+    loaders: [{
+      test: /\.jsx?$/,
+      exclude: /node_modules/,
+      loader: 'react-hot!babel'
+    }, {
+      test: /\.css$/,
+      loader: 'style!css!postcss'
+    }]
   },
   resolve: {
-    extensions: ['.js', '.jsx']
+    extensions: ['', '.js', '.jsx']
   },
-  plugins: [HtmlWebpackPluginConfig]
-
-}
+  output: {
+    path: __dirname + '/dist',
+    publicPath: '/',
+    filename: 'bundle.js'
+  },
+  devServer: {
+    contentBase: './dist',
+    hot: true
+  },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin()
+  ],
+  postcss: function () {
+    return [autoprefixer];
+  }
+};
